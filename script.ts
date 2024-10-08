@@ -1,19 +1,34 @@
 
 function createGameboard() {
-	const gameboard: string[] = ["a", "a", "a", "a", "a", "a", "a", "a", "a"];
-	const playMove = (square: number, player: string) => {
-		gameboard[square] = player;
+	const gameboard: string[] = new Array(9).fill('a');
+	let nextPlayer = "X";
+	const playMove = (square: number): boolean => {
+		if (gameboard[square] != 'a') {
+			return false;
+		}
+		gameboard[square] = nextPlayer;
+		changePlayer();
+		return true;
 	}
 
-	const findWinner = () => {
+	const findWinner = (): string => {
 		if (checkRows() || checkCols() || checkDiags()) {
-			return true;
+			changePlayer();
+			return nextPlayer;
+		}
+	}
+
+	const changePlayer = () => {
+		if (nextPlayer == "X") {
+			nextPlayer = "O";
+		} else {
+			nextPlayer = "X";
 		}
 	}
 
 	const checkRows = (): boolean => {
 		for (let i = 0; i < 9; i += 3) {
-			if (gameboard[i] == gameboard[i + 1] && gameboard[i] == gameboard[i + 2]) {
+			if (gameboard[i] == nextPlayer && gameboard[i + 1] == nextPlayer && gameboard[i + 2] == nextPlayer) {
 				return true;
 			}
 		}
@@ -22,7 +37,7 @@ function createGameboard() {
 
 	const checkCols = (): boolean => {
 		for (let i = 0; i < 3; i++) {
-			if (gameboard[i] == gameboard[i + 3] && gameboard[i] == gameboard[i + 6]) {
+			if (gameboard[i] == nextPlayer && gameboard[i + 3] == nextPlayer && gameboard[i + 6] == nextPlayer) {
 				return true;
 			}
 		}
@@ -30,10 +45,10 @@ function createGameboard() {
 	}
 
 	const checkDiags = (): boolean => {
-		if (gameboard[0] == gameboard[4] && gameboard[0] == gameboard[8]) {
+		if (gameboard[0] == nextPlayer && gameboard[4] == nextPlayer && gameboard[8] == nextPlayer) {
 			return true;
 		}
-		if (gameboard[2] == gameboard[4] && gameboard[2] == gameboard[6]) {
+		if (gameboard[2] == nextPlayer && gameboard[4] == nextPlayer && gameboard[6] == nextPlayer) {
 			return true;
 		}
 		return false;
@@ -41,3 +56,14 @@ function createGameboard() {
 
 	return {gameboard, playMove, findWinner};
 }
+
+const currentGame = createGameboard();
+currentGame.playMove(0);
+currentGame.playMove(1);
+currentGame.playMove(4);
+currentGame.playMove(2);
+currentGame.playMove(8);
+currentGame.playMove(8);
+console.log(currentGame.findWinner());
+
+console.log(currentGame.gameboard);
