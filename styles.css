@@ -1,0 +1,16 @@
+
+
+.board {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	grid-template-rows: reapeat(3, 1fr);
+
+	width: 500px;
+	height: 500px;
+	margin: auto;
+}
+
+.square {
+	border: 1px solid black;
+	text-align: center;
+}
