@@ -1,3 +1,6 @@
+* {
+	border: 1px solid red;
+}
 
 .board {
 	display: grid;
@@ -12,4 +15,14 @@
 .square {
 	border: 1px solid black;
 	text-align: center;
+	display: flex;
+}
+
+.square p {
+	margin: auto;
+	font-size: 100px;
+}
+
+.empty:hover {
+	cursor: pointer;
 }

@@ -1,18 +1,88 @@
 function createGameboard() {
     const gameboard = new Array(9).fill('a');
-    let nextPlayer = "X";
-    const playMove = (square) => {
+    const playMove = (square, move) => {
         if (gameboard[square] != 'a') {
             return false;
         }
-        gameboard[square] = nextPlayer;
-        changePlayer();
+        gameboard[square] = move;
         return true;
     };
-    const findWinner = () => {
-        if (checkRows() || checkCols() || checkDiags()) {
+    const findWinner = (player) => {
+        if (checkRows(player) || checkCols(player) || checkDiags(player)) {
+            return true;
+        }
+    };
+    const checkRows = (player) => {
+        for (let i = 0; i < 9; i += 3) {
+            if (gameboard[i] == player && gameboard[i + 1] == player && gameboard[i + 2] == player) {
+                return true;
+            }
+        }
+        return false;
+    };
+    const checkCols = (player) => {
+        for (let i = 0; i < 3; i++) {
+            if (gameboard[i] == player && gameboard[i + 3] == player && gameboard[i + 6] == player) {
+                return true;
+            }
+        }
+        return false;
+    };
+    const checkDiags = (player) => {
+        if (gameboard[0] == player && gameboard[4] == player && gameboard[8] == player) {
+            return true;
+        }
+        if (gameboard[2] == player && gameboard[4] == player && gameboard[6] == player) {
+            return true;
+        }
+        return false;
+    };
+    const resetBoard = () => {
+        gameboard.fill('a');
+    };
+    return { gameboard, playMove, findWinner, resetBoard };
+}
+function createDisplayController() {
+    const playMove = (index, move) => {
+        const square = document.getElementById(index.toString());
+        const newMove = document.createElement("p");
+        newMove.className = move;
+        newMove.innerText = move;
+        square.appendChild(newMove);
+        square.classList.remove("empty");
+    };
+    const resetGame = () => {
+        const squares = document.querySelectorAll(".square");
+        console.log(squares);
+        squares.forEach((square) => {
+            square.classList.add("empty");
+            if (square.firstChild) {
+                square.removeChild(square.firstChild);
+            }
+        });
+    };
+    return { playMove, resetGame };
+}
+function gameController() {
+    const gameboard = createGameboard();
+    const displayController = createDisplayController();
+    let nextPlayer = "X";
+    const updateEmptySquares = () => {
+        const emptySquares = document.querySelectorAll(".empty");
+        emptySquares.forEach((square) => {
+            square.addEventListener("click", (e) => {
+                const index = parseInt(e.target.id);
+                playMove(index);
+            });
+        });
+    };
+    const playMove = (index) => {
+        if (gameboard.playMove(index, nextPlayer)) {
+            displayController.playMove(index, nextPlayer);
+            if (gameboard.findWinner(nextPlayer)) {
+                console.log(nextPlayer + " Wins!!!");
+            }
             changePlayer();
-            return nextPlayer;
         }
     };
     const changePlayer = () => {
@@ -23,39 +93,12 @@ function createGameboard() {
             nextPlayer = "X";
         }
     };
-    const checkRows = () => {
-        for (let i = 0; i < 9; i += 3) {
-            if (gameboard[i] == nextPlayer && gameboard[i + 1] == nextPlayer && gameboard[i + 2] == nextPlayer) {
-                return true;
-            }
-        }
-        return false;
+    const reset = () => {
+        gameboard.resetBoard();
+        displayController.resetGame();
     };
-    const checkCols = () => {
-        for (let i = 0; i < 3; i++) {
-            if (gameboard[i] == nextPlayer && gameboard[i + 3] == nextPlayer && gameboard[i + 6] == nextPlayer) {
-                return true;
-            }
-        }
-        return false;
-    };
-    const checkDiags = () => {
-        if (gameboard[0] == nextPlayer && gameboard[4] == nextPlayer && gameboard[8] == nextPlayer) {
-            return true;
-        }
-        if (gameboard[2] == nextPlayer && gameboard[4] == nextPlayer && gameboard[6] == nextPlayer) {
-            return true;
-        }
-        return false;
-    };
-    return { gameboard, playMove, findWinner };
+    return { gameboard, displayController, updateEmptySquares, reset };
 }
-const currentGame = createGameboard();
-currentGame.playMove(0);
-currentGame.playMove(1);
-currentGame.playMove(4);
-currentGame.playMove(2);
-currentGame.playMove(8);
-currentGame.playMove(8);
-console.log(currentGame.findWinner());
-console.log(currentGame.gameboard);
+let currentGame = gameController();
+currentGame.reset();
+currentGame.updateEmptySquares();
